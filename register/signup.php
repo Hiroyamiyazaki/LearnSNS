@@ -1,6 +1,7 @@
 <?php
     // PHPプログラム
     $errors = [];
+    $count = '';
 
     if(!empty($_POST)){
         $name = $_POST['input_name'];//ポスト送信されたときだけ実行しますよ（もしnameが空じゃなければ
@@ -21,8 +22,25 @@
         } elseif ($count < 4 || 16 < $count){
             $errors['password'] = 'length';
         }
+        //画像名を取得
+        $file_name = $_FILES['input_img_name']['name'];
+        if (!empty($file_name)) {
+            //拡張子チェックの処理
+        } else {
+            $errors['img_name'] = 'blank';
+        }
+        if(!empty($file_name)){
+            $file_type = substr($file_name,-3);
+            $file_type = strtolower($file_type);
+            if($file_type !='jpg' && $file_type !='png' && $file_type!= 'gif'){
+                $errors['img_name'] = 'type';
+            }
+        }else{
+            $error['img_name'] = 'blank';
+        }
+        }
 
-    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -38,6 +56,7 @@
                        <div class="col-xs-8 col-xs-offset-2 thumbnail">
                 <h2 class="text-center content_header">アカウント作成</h2>
                 <form method="POST" action="signup.php" enctype="multipart/form-data">
+                    <!-- enctypeをformに入れないと画像を送れない -->
                     <div class="form-group">
                         <label for="name">ユーザー名</label>
                         <input type="text" name="input_name" class="form-control" id="name" placeholder="山田 太郎">
@@ -57,13 +76,20 @@
                         <input type="password" name="input_password" class="form-control" id="password" placeholder="4 ~ 16文字のパスワード">
                         <?php if (isset($errors['password']) && $errors['password'] == 'blank'): ?>
                             <p class="text-danger">パスワードを入力してください</p>
+                         <!-- パスワードの入力文字数の指定 -->
                          <?php elseif($count < 4 || 16 < $count): ?>
                          <p class="text-danger">パスワードは４文字以上１６文字以下にしてください</p>   
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="img_name">プロフィール画像</label>
-                        <input type="file" name="input_img_name" id="img_name">
+                        <input type="file" name="input_img_name" accept = "image/*" id="img_name">
+                        <?php if(isset($errors['img_name']) && $errors['img_name'] == 'blank') { ?>
+                            <p class="text-danger">画像を選択してください</p>
+                        <?php } ?>
+                        <?php if (isset($errors['img_name']) && $errors['img_name'] == 'type') { ?>
+                            <p class="text-danger">拡張子が「jpg」「png」「gif」の画像を選択してください</p>
+                        <?php } ?>
                     </div>
                     <input type="submit" class="btn btn-default" value="確認">
                     <a href="../signin.php" style="float: right; padding-top: 6px;" class="text-success">サインイン</a>
