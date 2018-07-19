@@ -1,12 +1,22 @@
 <?php
     // PHPプログラム
+    session_start();
+
+    date_default_timezone_set('Asia/Manila');
     $errors = [];
     $count = '';
+
+    if (isset($_GET['action']) && $_GET['action'] == 'rewrite'){
+        $_POST['input_name'] = $_SESSION['register']['name'];
+        $_POST['input_email'] = $_SESSION['register']['email'];
+        $_POST['input_password'] = $_SESSION['register']['password'];
+        $errors['rewrite'] = true;
+    }
 
     if(!empty($_POST)){
         $name = $_POST['input_name'];//ポスト送信されたときだけ実行しますよ（もしnameが空じゃなければ
         $email = $_POST['input_email'];
-        $password =$_POST['input_password'];
+        $password = $_POST['input_password'];
 
 
         //ユーザー名の空チェック
@@ -23,7 +33,10 @@
             $errors['password'] = 'length';
         }
         //画像名を取得
-        $file_name = $_FILES['input_img_name']['name'];
+        $file_name = '' ;
+        if (!isset($_GET['action'])){
+            $file_name = $_FILES['input_img_name'];
+        }
         if (!empty($file_name)) {
             //拡張子チェックの処理
         } else {
@@ -37,6 +50,20 @@
             }
         }else{
             $error['img_name'] = 'blank';
+        }
+        if (empty($errors)){
+            //$errors
+            $date_str = date('YmdHis');
+            $submit_file_name =$date_str.$file_name;
+            move_uploaded_file($_FILES['input_img_name']['tmp_name'], '../user_profile_img/'.$submit_file_name);
+
+            $_SESSION['register']['name'] = $_POST['input_name'];
+            $_SESSION['register']['email'] = $_POST['input_email'];
+            $_SESSION['register']['password'] = $_POST['input_password'];
+            $_SESSION['register']['img_name'] = $submit_file_name;
+
+            header('Location: check.php');
+            exit();
         }
         }
 
@@ -81,6 +108,7 @@
                          <p class="text-danger">パスワードは４文字以上１６文字以下にしてください</p>   
                         <?php endif; ?>
                     </div>
+                    
                     <div class="form-group">
                         <label for="img_name">プロフィール画像</label>
                         <input type="file" name="input_img_name" accept = "image/*" id="img_name">
