@@ -29,10 +29,25 @@ if($feed !=''){
 
 }else{
   $errors['feed'] = 'blank';
+ }
 }
-  
 
-}
+    $sql = 'SELECT `f`.*, `u`.`name`, `u`.`img_name` FROM `feeds` AS `f` LEFT JOIN `users` AS `u` ON `f`.`user_id`=`u`.`id` ORDER BY `created` DESC';
+    $data = array();
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute($data);
+    
+
+    $feeds = array();
+
+    while (true) {
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($record == false) {
+            break;
+        }
+        $feeds[] = $record;
+      }
+
 
 
 ?>
@@ -101,19 +116,22 @@ if($feed !=''){
             <input type="submit" value="投稿する" class="btn btn-primary">
           </form>
         </div>
+        <?php foreach ($feeds as $feed) { ?>
         <div class="thumbnail">
           <div class="row">
             <div class="col-xs-1">
-              <img src="https://placehold.jp/40x40.png" width="40">
+              <img src="user_profile_img/<?php echo $feed['img_name'];?>" width="40">
             </div>
             <div class="col-xs-11">
-              野原ひろし<br>
-              <a href="#" style="color: #7F7F7F;">2018-03-03</a>
+              <?php echo $feed['name']; ?>
+              <br>
+              <a href="#" style="color: #7F7F7F;"><?php echo $feed['created']; ?></a>
             </div>
           </div>
           <div class="row feed_content">
             <div class="col-xs-12" >
-              <span style="font-size: 24px;">夢は逃げない。逃げるのはいつも自分だ。</span>
+
+              <span style="font-size: 24px;"><?php echo $feed['feed']; ?></span>
             </div>
           </div>
           <div class="row feed_sub">
@@ -131,6 +149,7 @@ if($feed !=''){
             </div>
           </div>
         </div>
+            <?php } ?>
         <div aria-label="Page navigation">
           <ul class="pager">
             <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>
