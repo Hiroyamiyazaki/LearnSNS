@@ -9,7 +9,7 @@
     $name ='';
     $email = '';
     $password = '';
-    
+
 
     if (isset($_GET['action']) && $_GET['action'] == 'rewrite'){
         $_POST['input_name'] = $_SESSION['register']['name'];
@@ -111,10 +111,12 @@
                             <p class="text-danger">パスワードを入力してください</p>
                          <!-- パスワードの入力文字数の指定 -->
                          <?php elseif($count < 4 || 16 < $count): ?>
-                         <p class="text-danger">パスワードは４文字以上１６文字以下にしてください</p>   
+                         <p class="text-danger">パスワードは４文字以上１６文字以下にしてください</p>
                         <?php endif; ?>
+                        <?php if(!empty($errors)){?>
+                            <p class= "text-danger">パスワードを再度入力してください</p><?php }?>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="img_name">プロフィール画像</label>
                         <input type="file" name="input_img_name" accept = "image/*" id="img_name">
