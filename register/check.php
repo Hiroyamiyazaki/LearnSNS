@@ -1,6 +1,8 @@
 <?php
     session_start();
 
+    pullreq
+
     require_once('../dbconnect.php');//他のファイルの処理を実行する（DB接続）
 
 
