@@ -22,6 +22,10 @@
         $data = array($name,$email,password_hash($password,PASSWORD_DEFAULT), $img_name);
             $stmt = $dbh->prepare($sql);
             $stmt->execute($data);
+
+            unset($_SESSION['register']);
+            header('Location: thanks.php');
+            exit();
       }
 
 ?>

@@ -1,53 +1,44 @@
 <?php
-session_start();
-    require('dbconnect.php');
-    $name = [];
-    $email = [];
-    $errors = array();
 
+    session_start();
 
+    require_once('dbconnect.php');
 
-    if(!empty($_POST)){
-      $email = $_POST['input_email'];
-      $password = $_POST['input_password'];
+    $errors = [];
 
-    if($email !='' && $password !=''){
-        //データベースとの照合
-    $spl = 'SELECT * FROM `users` WHERE `email` =?';
-    $data = [$email];
-    $stmt = $dbh->prepare($spl);
-    $stmt->execute($data);
-    $record = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!empty($_POST)) {
+            // ①
+            $email = $_POST['input_email'];
+            $password = $_POST['input_password'];
 
-//メールアドレスでの本人確認
-        if($record == false){
-           $errors['signin'] ='failed';
-       }
-     // if(password_verify($password,$record['password'])){
-     if(true){
-        //認証成功
-        //$sessionにidを保存
-        $_SESSION['id'] = $record['id'];
+            if ($email != '' && $password != '') {
+                $sql = 'SELECT * FROM `users` WHERE `email`=?';
+                $data = [$email];
+                $stmt = $dbh->prepare($sql);
+                $stmt->execute($data);
+                $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        header("Location: timeline.php");
-        exit();
-    }else{
-        $errors['signin'] = 'failed';
-    }
+                // メールアドレスでの本人確認
+                if ($record == false) {
+                    $errors['signin'] = 'failed';
+                }
 
-
-    }else{
-     $errors['signin'] = 'blank';
-  }
-
-
-}
-
-
-
-
+                // if (password_verify($password, $record['password'])) {
+                if (true) {
+                    //認証成功
+                    //SESSION変数にIDを保存
+                     $_SESSION['id'] = $record['id'];
+                    header("Location: timeline.php");
+                    exit();
+                } else {
+                    //認証失敗
+                  $errors['signin'] = 'failed';
+                }
+            } else {
+                $errors['signin'] = 'blank';
+            }
+        }
 ?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -63,16 +54,15 @@ session_start();
             <div class="col-xs-8 col-xs-offset-2 thumbnail">
                 <h2 class="text-center content_header">サインイン</h2>
                 <form method="POST" action="" enctype="multipart/form-data">
-                        <?php if(isset($errors['signin']) && $errors['signin'] == 'blank'): ?>
-                            <p class="text-danger">メールアドレスとパスワードを正しく入力してください</p>
-                        <?php endif; ?>
-                        <?php if(isset($errors['signin']) && $errors['signin'] == 'failed'):?>
-                            <p class= "text-danger">サインインに失敗しました</p>
-                        <?php endif; ?>
-
                     <div class="form-group">
                         <label for="email">メールアドレス</label>
                         <input type="email" name="input_email" class="form-control" id="email" placeholder="example@gmail.com">
+                        <?php if (isset($errors['signin']) && $errors['signin'] == 'blank'): ?>
+                            <p class="text-danger">メールアドレスとパスワードを正しく入力してください</p>
+                        <?php endif; ?>
+                        <?php if (isset($errors['signin']) && $errors['signin'] == 'failed'): ?>
+                            <p class="text-danger">サインインに失敗しました</p>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="password">パスワード</label>
