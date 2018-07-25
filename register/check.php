@@ -2,6 +2,7 @@
     session_start();
 
     pullreq
+    echo '変化';
 
     require_once('../dbconnect.php');//他のファイルの処理を実行する（DB接続）
 
