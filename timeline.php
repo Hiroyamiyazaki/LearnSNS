@@ -3,6 +3,8 @@
 session_start();
 require ('dbconnect.php');
 
+const CONTENT_PER_PAGE = 5;
+
 if(!isset($_SESSION['id'])){
         header('Location: signin.php');
         exit();
@@ -15,7 +17,30 @@ $stmt->execute($data);
 
 $signin_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+
+
+
+
+
 $errors = array();
+     if (isset($_GET['page'])) {
+        $page = $_GET['page'];
+    } else {
+        $page = 1;
+    }
+
+$page = max($page, 1);
+$sql_count = "SELECT COUNT(*)AS`cnt`FROM`feeds`";
+$stmt_count = $dbh->prepare($sql_count);
+$stmt_count->execute();
+
+$record_cnt = $stmt_count->fetch(PDO::FETCH_ASSOC);
+
+$last_page = ceil($record_cnt['cnt']/CONTENT_PER_PAGE);
+$page = min($page,$last_page);
+$start = ($page -1)*CONTENT_PER_PAGE;
+
+
 if(!empty($_POST)){
   $feed = $_POST['feed'];
 if($feed !=''){
@@ -32,11 +57,13 @@ if($feed !=''){
  }
 }
 
-    $sql = 'SELECT `f`.*, `u`.`name`, `u`.`img_name` FROM `feeds` AS `f` LEFT JOIN `users` AS `u` ON `f`.`user_id`=`u`.`id` ORDER BY `created` DESC';
+    $sql = 'SELECT `f`.*, `u`.`name`, `u`.`img_name` FROM `feeds` AS `f` LEFT JOIN `users` AS `u` ON `f`.`user_id`=`u`.`id` ORDER BY `created` DESC LIMIT '.CONTENT_PER_PAGE.' OFFSET '.$start;
+
     $data = array();
     $stmt = $dbh->prepare($sql);
     $stmt->execute($data);
-    
+
+
 
     $feeds = array();
 
@@ -152,8 +179,8 @@ if($feed !=''){
             <?php } ?>
         <div aria-label="Page navigation">
           <ul class="pager">
-            <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>
-            <li class="next"><a href="#">Older <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="previous disabled"><a href="timeline.php?page=<?php echo $page- 1;?>"><span aria-hidden="true">&larr;</span> Newer</a></li>
+            <li class="next"><a href="timeline.php?page=<?php echo $page + 1; ?>">Older <span aria-hidden="true">&rarr;</span></a></li>
           </ul>
         </div>
       </div>
