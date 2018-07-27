@@ -179,8 +179,26 @@ if($feed !=''){
             <?php } ?>
         <div aria-label="Page navigation">
           <ul class="pager">
-            <li class="previous disabled"><a href="timeline.php?page=<?php echo $page- 1;?>"><span aria-hidden="true">&larr;</span> Newer</a></li>
-            <li class="next"><a href="timeline.php?page=<?php echo $page + 1; ?>">Older <span aria-hidden="true">&rarr;</span></a></li>
+
+
+
+
+
+
+            <?php if($page == 1): ?>
+              <li class="previous disabled"><a><span aria-hidden="ture">&larr;</span>Newer</a></li>
+              <?php else:?>
+
+            <li class="previous"><a href="timeline.php?page=<?= $page - 1; ?>"><span aria-hidden="true">&larr;</span> Newer</a></li>
+            <?php endif; ?>
+
+            <?php if($page == $last_page): ?>
+
+              <li class="next disabled"><a>Older <span aria-hidden="true">&rarr;</span></a></li>
+              <?php else: ?>
+
+            <li class="next"><a href="timeline.php?page=<?= $page + 1; ?>">Older <span aria-hidden="true">&rarr;</span></a></li>
+            <?php endif; ?>
           </ul>
         </div>
       </div>
