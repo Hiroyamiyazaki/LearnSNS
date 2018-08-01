@@ -23,8 +23,9 @@
                     $errors['signin'] = 'failed';
                 }
 
-                // if (password_verify($password, $record['password'])) {
-                if (true) {
+
+                if (password_verify($password, $record['password'])) {
+                // if (true) {
                     //認証成功
                     //SESSION変数にIDを保存
                      $_SESSION['id'] = $record['id'];
